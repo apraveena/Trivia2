@@ -24,28 +24,25 @@ class ViewController: UIViewController {
     @IBOutlet weak var endOfGameMessageLabel: UILabel!
     @IBOutlet weak var scoreLabel: UILabel!
     @IBOutlet weak var nextButton: UIButton!
+    @IBOutlet weak var showAnswerSwitch: UISwitch!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         questionLabel.text = questions[currQn]
     }
+    
     func processAnswer(){
         if(reset == true) {
-            nextButton.setTitle("Check", for: .normal)
-            userAnswerTextField.text = ""
-            validationLabel.text = ""
-            endOfGameMessageLabel.text = ""
-            questionLabel.text = ""
-            score = 0
-            currQn = 0
-            questionLabel.text = questions[currQn]
-            reset = false
+            resetScreen()
             return
         }
+        //Handle empty answer
         if(userAnswerTextField.text == ""){
             validationLabel.text = "Please enter an answer."
             return
         }
+        
+        //Validate user answer
         let userAnswer = userAnswerTextField.text
         let correctAnswer = answers[currQn]
         
@@ -53,7 +50,12 @@ class ViewController: UIViewController {
             validationLabel.text = "Correct."
             score += 1
         } else {
-            validationLabel.text = "Incorrect. Correct answer is \(correctAnswer)"
+            if(showAnswerSwitch.isOn){
+                validationLabel.text = "Incorrect. Correct answer is \(correctAnswer)"
+            } else {
+                validationLabel.text = "Incorrect."
+            }
+            
         }
         currQn += 1
         if (currQn >= questions.count){
@@ -69,12 +71,29 @@ class ViewController: UIViewController {
         }
         userAnswerTextField.text = ""
         scoreLabel.text = "Score: \(String(score))"
+        
     }
-    @IBAction func textButtonPress(_ sender: Any) {
+    
+    @IBAction func textFieldEnterPress(_ sender: Any) {
         processAnswer()
     }
+    
     @IBAction func checkButtonClick(_ sender: Any) {
         processAnswer()
     }
+    
+    func resetScreen(){
+        nextButton.setTitle("Check", for: .normal)
+        userAnswerTextField.text = ""
+        validationLabel.text = ""
+        endOfGameMessageLabel.text = ""
+        questionLabel.text = ""
+        score = 0
+        currQn = 0
+        questionLabel.text = questions[currQn]
+        reset = false
+    }
+    
+    
 }
 
