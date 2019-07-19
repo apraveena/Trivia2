@@ -15,18 +15,33 @@ class ViewController: UIViewController {
                      "What is tall when it is young and short when it is old"]
     var currQn = 0
     var answers = ["Sponge", "Yard stick", "Candle"]
+    var score = 0
+    var reset = false
     
     @IBOutlet weak var questionLabel: UILabel!
     @IBOutlet weak var userAnswerTextField: UITextField!
     @IBOutlet weak var validationLabel: UILabel!
     @IBOutlet weak var endOfGameMessageLabel: UILabel!
+    @IBOutlet weak var scoreLabel: UILabel!
+    @IBOutlet weak var nextButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         questionLabel.text = questions[currQn]
     }
-
-    @IBAction func checkButtonClick(_ sender: Any) {
+    func processAnswer(){
+        if(reset == true) {
+            nextButton.setTitle("Check", for: .normal)
+            userAnswerTextField.text = ""
+            validationLabel.text = ""
+            endOfGameMessageLabel.text = ""
+            questionLabel.text = ""
+            score = 0
+            currQn = 0
+            questionLabel.text = questions[currQn]
+            reset = false
+            return
+        }
         if(userAnswerTextField.text == ""){
             validationLabel.text = "Please enter an answer."
             return
@@ -36,16 +51,30 @@ class ViewController: UIViewController {
         
         if(userAnswer!.caseInsensitiveCompare(correctAnswer) == .orderedSame) {
             validationLabel.text = "Correct."
+            score += 1
         } else {
             validationLabel.text = "Incorrect. Correct answer is \(correctAnswer)"
         }
         currQn += 1
         if (currQn >= questions.count){
-            endOfGameMessageLabel.text = "Well done. Good game."
+            if(score > questions.count / 2) {
+                endOfGameMessageLabel.text = "Well done.\nClick Restart to play again ."
+            } else {
+                endOfGameMessageLabel.text = "Better luck next time.\nClick Restart to play again."
+            }
+            nextButton.setTitle("Restart", for: .normal)
+            reset = true
         } else {
             questionLabel.text = questions[currQn]
         }
         userAnswerTextField.text = ""
+        scoreLabel.text = "Score: \(String(score))"
+    }
+    @IBAction func textButtonPress(_ sender: Any) {
+        processAnswer()
+    }
+    @IBAction func checkButtonClick(_ sender: Any) {
+        processAnswer()
     }
 }
 
